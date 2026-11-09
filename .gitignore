@@ -1,0 +1,11 @@
+# Bundle deployment state (local, per user)
+.databricks/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Secrets must live in the secret scope, never in files
+.env
+.env.*

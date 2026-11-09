@@ -1,0 +1,16 @@
+# Example source registration (design doc section 4). Generic: replace every <...> value.
+source_id: my_source
+raw_location: { catalog: <raw_catalog>, schema: <raw_schema> }
+target_location: { catalog: semantic_builder_poc, silver_schema: my_source_silver, gold_schema: my_source_gold }
+description: <free-text description of the data and its purpose>
+domain_label: <optional tag>
+scope:
+  include_tables: ["*"]
+  exclude_tables: []
+seed_questions: []
+glossary:
+  source: none
+reviewers:
+  data_engineer: <user or group>
+  data_owner: <user or group>
+  analyst: <user or group>

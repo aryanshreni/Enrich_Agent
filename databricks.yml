@@ -1,0 +1,38 @@
+# Declarative Automation Bundle for the Agentic Semantic Layer Builder (POC).
+# Deploy:  databricks bundle deploy -t dev
+# Two-step first deploy: deploy once to create the app (and its service principal),
+# then set app_sp_application_id so jobs run as that same identity, and deploy again.
+
+bundle:
+  name: semantic_builder_poc
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Dev catalog for control tables, artifacts, silver and gold output
+    default: semantic_builder_poc
+  warehouse_id:
+    description: SQL warehouse for control-table access, validation queries and metric view DDL
+    default: 5a6ef6635baf81c5
+  llm_endpoint:
+    description: Foundation Model API endpoint used by all stage agents
+    default: databricks-claude-sonnet-5-5
+  secret_scope:
+    description: Secret scope holding the GitHub token (key github_token)
+    default: semantic_builder_poc
+  git_repo:
+    description: GitHub repo (owner/name) that receives artifact commits
+    default: aryanshreni/Enrich_Agent
+  git_branch:
+    description: Branch that receives artifact commits
+    default: main
+  app_sp_application_id:
+    description: Application ID of the app's service principal (app sb-poc-senthil-raja)
+    default: ddebc7d7-dd21-4009-8583-0a2d7b1bebe9
+
+targets:
+  dev:
+    mode: development
+    default: true

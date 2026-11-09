@@ -1,0 +1,17 @@
+command:
+  - streamlit
+  - run
+  - app/app.py
+
+env:
+  - name: SB_CATALOG
+    value: semantic_builder_poc
+  - name: SB_WAREHOUSE_ID
+    valueFrom: sql-warehouse
+  # Resource keys must match the app's resources (resources/app.yml and the deployed app): sql-warehouse, job, model.
+  - name: SB_STAGE_RUNNER_JOB_ID
+    valueFrom: job
+  - name: SB_LLM_MODEL
+    valueFrom: model
+  - name: STREAMLIT_BROWSER_GATHER_USAGE_STATS
+    value: "false"

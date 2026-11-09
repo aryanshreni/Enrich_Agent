@@ -1,0 +1,61 @@
+# Generic stage runner: one job for every stage of every run.
+# The app starts it with run_id and stage; the job drafts the artifact and review packet
+# (or executes an approved artifact) and records status in control.stage_runs.
+#
+# The job runs as the app's service principal (single identity for the whole workflow, no
+# interactive user needed). Requires the grants in setup/one_time_grant_app_sp_access and the
+# Service Principal User role on that principal for whoever deploys.
+
+resources:
+  jobs:
+    stage_runner:
+      name: semantic-builder-stage-runner
+      max_concurrent_runs: 10
+      run_as:
+        service_principal_name: ${var.app_sp_application_id}
+      parameters:
+        - name: run_id
+          default: ""
+        - name: stage
+          default: ""
+        - name: action
+          default: draft   # draft | execute
+      environments:
+        - environment_key: default
+          spec:
+            client: "3"
+            dependencies:
+              - databricks-sdk>=0.60.0
+              - databricks-sql-connector>=4.0.0
+              - mlflow>=3.1
+              - openai>=1.60
+              - pydantic>=2.7
+              - pyyaml>=6.0
+              - sqlglot>=25.0
+              - requests>=2.31
+      tasks:
+        - task_key: run_stage
+          environment_key: default
+          spark_python_task:
+            python_file: ../jobs/stage_runner.py
+            parameters:
+              - --run-id
+              - "{{job.parameters.run_id}}"
+              - --stage
+              - "{{job.parameters.stage}}"
+              - --action
+              - "{{job.parameters.action}}"
+              - --catalog
+              - ${var.catalog}
+              - --warehouse-id
+              - ${var.warehouse_id}
+              - --llm-endpoint
+              - ${var.llm_endpoint}
+              - --secret-scope
+              - ${var.secret_scope}
+              - --git-repo
+              - ${var.git_repo}
+              - --git-branch
+              - ${var.git_branch}
+              - --job-run-id
+              - "{{job.run_id}}"

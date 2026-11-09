@@ -1,0 +1,24 @@
+resources:
+  apps:
+    semantic_builder:
+      # App names are workspace-global and dev mode does not prefix them; namespace per developer.
+      name: sb-poc-${workspace.current_user.domain_friendly_name}
+      description: Agentic Semantic Layer Builder (POC) - guided raw to Genie workflow with review gates
+      # Repo root, so the app can import the shared packet schema and tools.
+      # Entry point and env are in app.yaml at the repo root.
+      source_code_path: ..
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE
+        - name: job
+          job:
+            id: ${resources.jobs.stage_runner.id}
+            permission: CAN_MANAGE_RUN
+        # Matches the deployed app: Unity Gateway model service for the LLM.
+        - name: model
+          uc_securable:
+            securable_full_name: system.ai.claude-sonnet-5-5
+            securable_type: MODEL_SERVICE
+            permission: EXECUTE
